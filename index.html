@@ -90,9 +90,9 @@
       <input type="text" id="login-user" placeholder="Username" style="width: 100%; padding: 8px; margin-bottom: 10px; background: var(--surface2); border: 1px solid var(--border); color: var(--text);">
     </div>
     <div class="form-group">
-      <input type="password" id="login-pass" placeholder="Password" style="width: 100%; padding: 8px; margin-bottom: 20px; background: var(--surface2); border: 1px solid var(--border); color: var(--text);" onkeydown="if(event.key === 'Enter' && window.attemptLogin) window.attemptLogin()">
+      <input type="password" id="login-pass" placeholder="Password" style="width: 100%; padding: 8px; margin-bottom: 20px; background: var(--surface2); border: 1px solid var(--border); color: var(--text);" onkeydown="if(event.key === 'Enter') { if(window.attemptLogin) window.attemptLogin(); else document.getElementById('login-error').textContent='App still loading — please wait a moment and try again.'; document.getElementById('login-error').style.display='block'; }">
     </div>
-    <button class="btn btn-primary" onclick="if(window.attemptLogin) window.attemptLogin()" style="width: 100%; justify-content: center;">Log In</button>
+    <button class="btn btn-primary" onclick="if(window.attemptLogin) { window.attemptLogin(); } else { document.getElementById('login-error').textContent='App still loading — please wait a moment and try again.'; document.getElementById('login-error').style.display='block'; }" style="width: 100%; justify-content: center;">Log In</button>
     <div id="login-error" style="color: var(--red); font-size: 12px; margin-top: 10px; display: none;">Invalid credentials</div>
   </div>
 </div>
@@ -231,6 +231,19 @@
 
     <script src="js/pouchdb.min.js"></script>
     <script type="module" src="js/main.js"></script>
+    <script>
+      // If the ES module fails to load (e.g. missing file, network error),
+      // window.attemptLogin will never be assigned. Show a clear error after 5s.
+      setTimeout(() => {
+        if (!window.attemptLogin) {
+          const err = document.getElementById('login-error');
+          if (err) {
+            err.textContent = 'App failed to load. Check the browser console (F12) for errors.';
+            err.style.display = 'block';
+          }
+        }
+      }, 5000);
+    </script>
 </body>
 <footer class="footer">
     <p>Squadron Manning Board v1.0 | Capstone Project | June 2026</p>
